@@ -2,7 +2,7 @@ import User from "../../types/identity/User";
 import {useEffect, useState} from "react";
 import BeerService from "../../services/beer.service";
 import Beer from "../../types/Beer";
-import {Button, Chip, CircularProgress, Rating} from "@mui/material";
+import {Alert, Box, Button, Chip, CircularProgress, Rating} from "@mui/material";
 import * as React from "react";
 import './identity.less';
 import {DataGrid, GridColDef} from "@mui/x-data-grid";
@@ -37,8 +37,21 @@ export const UserBeers = ({user}: UserProps) => {
         );
     }
 
+    if (beers && beers.length === 0) {
+        return (
+            <>
+                <Alert severity="warning">You have no beers rated yet on your account! Go and check them out!</Alert>
+            </>
+        );
+    }
+
     function renderRating(params: any) {
-        return <Rating readOnly value={params.value} />;
+        return (
+            <>
+                <Rating readOnly value={params.value} precision={0.1} />
+                <Box sx={{ ml: 2 }}>{params.value}</Box>
+            </>
+        );
     }
 
     function renderFlavours(params: any) {
@@ -73,7 +86,7 @@ export const UserBeers = ({user}: UserProps) => {
             field: 'rating',
             headerName: 'Rating',
             type: 'number',
-            width: 125,
+            width: 165,
             renderCell: renderRating,
         },
         {
@@ -98,22 +111,39 @@ export const UserBeers = ({user}: UserProps) => {
         },
     ];
 
-    return (
-        <div className="profile-rated-beers">
-            <DataGrid
-                rows={beers?.map((beer) => ({
-                    id: beer.id,
+    const getBeerRows = () => {
+        const result: { id: string; beerName: string; beerType: string; priceCategory: string | undefined; country: string; manufacturer: string; abv: number; rating: number; comment: string; flavours: string[]; details: number | undefined; }[] = [];
+        beers.forEach((beer) => {
+            beer.ratings.forEach((rating, index) => {
+                result.push({
+                    id: beer.id + 'rating' + index,
                     beerName: beer.name,
                     beerType: beer.beerType.name,
                     priceCategory: beer.priceCategory,
                     country: beer.country.name,
                     manufacturer: beer.manufacturer.name,
                     abv: beer.abv,
-                    rating: beer.ratings[0].rating,
-                    comment: beer.ratings[0].comment,
-                    flavours: beer.ratings[0].flavours,
-                    details: beer.id,
-                }))}
+                    rating: rating.rating,
+                    comment: rating.comment,
+                    flavours: rating.flavours,
+                    details: beer.id
+                });
+            })
+        });
+        return result;
+    }
+
+    return (
+        <div className="profile-rated-beers">
+            <Typography
+                className="table-header"
+                variant="h6"
+                component="div"
+            >
+                Your rated beers:
+            </Typography>
+            <DataGrid
+                rows={getBeerRows()}
                 columns={columns}
                 initialState={{
                     pagination: {

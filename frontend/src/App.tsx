@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import './App.css';
 import '@fontsource/roboto/400.css';
 import { BeersList } from './scenes/beers/list/BeersList';
-import {Route, Routes} from "react-router-dom";
+import {NavigateFunction, Route, Routes, useNavigate} from "react-router-dom";
 import {BeerDetails} from "./scenes/beers/details/BeerDetails";
 import Login from "./scenes/identity/Login";
 import Register from "./scenes/identity/Register";
@@ -13,6 +13,7 @@ import {UserBeers} from "./scenes/identity/UserBeers";
 import EventBus from "./common/EventBus";
 const App: React.FC = () => {
     const [currentUser, setCurrentUser] = useState<User | undefined>(undefined);
+    let navigate: NavigateFunction = useNavigate();
 
     useEffect(() => {
         const user = AuthService.getCurrentUser();
@@ -31,6 +32,7 @@ const App: React.FC = () => {
     const handleLogout = () => {
         AuthService.logout();
         setCurrentUser(undefined);
+        navigate("/beers");
     };
 
     return (

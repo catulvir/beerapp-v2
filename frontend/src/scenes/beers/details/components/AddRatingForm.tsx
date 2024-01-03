@@ -56,7 +56,7 @@ export const AddRatingForm = ({username, onSubmit}: AddRatingFormProps) => {
                 onSubmit={onSubmit}
                 validationSchema={validationSchema}
                 validateOnBlur={true}
-                validateOnChange={true}
+                validateOnChange={false}
             >
                 {(formikProps: FormikProps<Rating>) =>
                     <Form className="add-rating-form">

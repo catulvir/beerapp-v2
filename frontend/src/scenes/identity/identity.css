@@ -1,0 +1,29 @@
+.profile-rated-beers .table-header {
+  margin: 15px;
+}
+.identity-container {
+  padding: 15px;
+}
+.identity-container > img {
+  width: 90%;
+  max-width: 200px;
+  margin-bottom: 5px;
+}
+.identity-container .identity-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.identity-container .identity-form .form-group > div {
+  max-width: 200px;
+}
+.identity-container .success-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+.alert {
+  color: red;
+}
+/*# sourceMappingURL=identity.css.map */

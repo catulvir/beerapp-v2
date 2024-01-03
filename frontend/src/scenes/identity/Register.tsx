@@ -1,9 +1,21 @@
-import {useState} from "react";
-import { Formik, Field, Form, ErrorMessage } from "formik";
+import React, {useState} from "react";
+import {Formik, Form, ErrorMessage, FormikProps} from "formik";
 import * as Yup from "yup";
 import AuthService from "../../services/auth.service";
+import {
+    Alert,
+    Button,
+    Container,
+    FormControl, IconButton,
+    InputAdornment,
+    InputLabel,
+    OutlinedInput,
+    TextField
+} from "@mui/material";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 
 const Register: React.FC = () => {
+    const [showPassword, setShowPassword] = useState<boolean>(false);
     const [successful, setSuccessful] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
 
@@ -44,14 +56,14 @@ const Register: React.FC = () => {
                 .required("This field is required!"),
     });
 
-    const handleRegister = (formValue: { username: string; password: string; matchingPassword: string; email: string; }) => {
-        const { username, password, matchingPassword, email } = formValue;
+    const handleRegister = (formValue: { username: string; email: string; password: string; matchingPassword: string; }) => {
+        const { username, email, password, matchingPassword } = formValue;
 
         AuthService.register(
             username,
+            email,
             password,
             matchingPassword,
-            email,
         ).then(
             response => {
                 setMessage(response.data.message);
@@ -72,78 +84,116 @@ const Register: React.FC = () => {
     }
 
     return (
-        <div className="col-md-12">
-            <div className="card card-container">
-                <img
-                    src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-                    alt="profile-img"
-                    className="profile-img-card"
-                />
-
-                <Formik
-                    initialValues={initialValues}
-                    validationSchema={validationSchema}
-                    onSubmit={handleRegister}
-                >
-                    <Form>
-                        {!successful && (
-                            <div>
+        <Container className="identity-container">
+            <img
+                src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+                alt="profile-img"
+                className="profile-img-card"
+            />
+            <Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={handleRegister}
+            >
+                {(formikProps: FormikProps<{username: string, email: string, password: string, matchingPassword: string}>) =>
+                    <Form className="identity-form">
+                        {!successful &&
+                            <>
                                 <div className="form-group">
-                                    <label htmlFor="username"> Username </label>
-                                    <Field name="username" type="text" className="form-control" />
-                                    <ErrorMessage
-                                        name="username"
-                                        component="div"
-                                        className="alert alert-danger"
-                                    />
+                                    <FormControl>
+                                        <TextField
+                                            id="username"
+                                            label="Username"
+                                            name="username"
+                                            variant="outlined"
+                                            value={formikProps.values.username}
+                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => formikProps.setFieldValue('username', event.target.value)}
+                                        />
+                                        <ErrorMessage
+                                            name="username"
+                                            component="div"
+                                            className="alert"
+                                        />
+                                    </FormControl>
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="email"> Email </label>
-                                    <Field name="email" type="email" className="form-control" />
-                                    <ErrorMessage
-                                        name="email"
-                                        component="div"
-                                        className="alert alert-danger"
-                                    />
+                                    <FormControl>
+                                        <TextField
+                                            id="email"
+                                            label="Email"
+                                            name="email"
+                                            variant="outlined"
+                                            value={formikProps.values.email}
+                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => formikProps.setFieldValue('email', event.target.value)}
+                                        />
+                                        <ErrorMessage
+                                            name="email"
+                                            component="div"
+                                            className="alert"
+                                        />
+                                    </FormControl>
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="password"> Password </label>
-                                    <Field
-                                        name="password"
-                                        type="password"
-                                        className="form-control"
-                                    />
-                                    <ErrorMessage
-                                        name="password"
-                                        component="div"
-                                        className="alert alert-danger"
-                                    />
+                                    <FormControl>
+                                        <InputLabel htmlFor="password">Password</InputLabel>
+                                        <OutlinedInput
+                                            id="password"
+                                            name="password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={() => setShowPassword((show) => !show)}
+                                                        onMouseDown={(event: any) => event.preventDefault()}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                            label="Password"
+                                            value={formikProps.values.password}
+                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => formikProps.setFieldValue('password', event.target.value)}
+                                        />
+                                        <ErrorMessage
+                                            name="password"
+                                            component="div"
+                                            className="alert"
+                                        />
+                                    </FormControl>
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="matchingPassword"> Password </label>
-                                    <Field
-                                        name="matchingPassword"
-                                        type="password"
-                                        className="form-control"
-                                    />
-                                    <ErrorMessage
-                                        name="matchingPassword"
-                                        component="div"
-                                        className="alert alert-danger"
-                                    />
+                                    <FormControl>
+                                        <TextField
+                                            id="matchingPassword"
+                                            name="matchingPassword"
+                                            type="password"
+                                            label="Password again"
+                                            variant="outlined"
+                                            value={formikProps.values.matchingPassword}
+                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => formikProps.setFieldValue('matchingPassword', event.target.value)}
+                                        />
+                                        <ErrorMessage
+                                            name="matchingPassword"
+                                            component="div"
+                                            className="alert"
+                                        />
+                                    </FormControl>
                                 </div>
 
                                 <div className="form-group">
-                                    <button type="submit" className="btn btn-primary btn-block">Sign Up</button>
+                                    <Button color="primary" type="submit" variant="contained" key="submit" size="large">
+                                        Sign up
+                                    </Button>
                                 </div>
-                            </div>
-                        )}
-
+                            </>
+                        }
                         {message && (
-                            <div className="form-group">
+                            <div>
                                 <div
                                     className={
                                         successful ? "alert alert-success" : "alert alert-danger"
@@ -155,9 +205,19 @@ const Register: React.FC = () => {
                             </div>
                         )}
                     </Form>
-                </Formik>
+                }
+            </Formik>
+            <div>
+                {successful &&
+                    <div className="success-container">
+                        <Alert severity="success">Your account has successfully been created!</Alert>
+                        <Button color="primary" variant="contained" size="large" href="/login">
+                            Login to your account
+                        </Button>
+                    </div>
+                }
             </div>
-        </div>
+        </Container>
     );
 }
 
