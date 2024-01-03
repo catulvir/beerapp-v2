@@ -1,6 +1,6 @@
 package ee.beerappv2.api.config.security;
 
-import ee.beerappv2.api.service.AuthService;
+import ee.beerappv2.api.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -20,11 +20,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final AuthService databaseUserDetailsService;
+    private final UserService databaseUserDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
     private final JwtUtils jwtUtils;
 
-    public SecurityConfig(AuthService databaseUserDetailsService, AuthEntryPointJwt unauthorizedHandler, JwtUtils jwtUtils) {
+    public SecurityConfig(UserService databaseUserDetailsService, AuthEntryPointJwt unauthorizedHandler, JwtUtils jwtUtils) {
         this.databaseUserDetailsService = databaseUserDetailsService;
         this.unauthorizedHandler = unauthorizedHandler;
         this.jwtUtils = jwtUtils;
@@ -63,6 +63,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/user/**").permitAll()
                                 .requestMatchers("/beers/**").permitAll()
+                                .requestMatchers("/flavours/**").permitAll()
+                                .requestMatchers("/countries/**").permitAll()
+                                .requestMatchers("/beerTypes/**").permitAll()
+                                .requestMatchers("/manufacturers/**").permitAll()
                                 .anyRequest().authenticated()
                 );
 

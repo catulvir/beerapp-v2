@@ -18,9 +18,14 @@ public class FlavourRepository {
         this.template = template;
     }
 
+    public List<Flavour> getAllFlavours() {
+
+        return template.query("SELECT * FROM flavour ORDER BY name", BeanPropertyRowMapper.newInstance(Flavour.class));
+    }
+
     public List<Flavour> findFlavours(String name) {
 
-        StringBuilder sql = new StringBuilder("SELECT * FROM flavours ");
+        StringBuilder sql = new StringBuilder("SELECT * FROM flavour ");
 
         if (name != null) {
             sql.append("WHERE LOWER(name) LIKE ? ORDER BY name");
@@ -35,7 +40,7 @@ public class FlavourRepository {
 
     public Flavour findFlavour(Long id) {
 
-        String sql = "SELECT * FROM flavours WHERE id = ?";
+        String sql = "SELECT * FROM flavour WHERE id = ?";
 
         return template.queryForObject(sql, BeanPropertyRowMapper.newInstance(Flavour.class), id);
     }
@@ -62,14 +67,14 @@ public class FlavourRepository {
 
     public void updateFlavour(Flavour flavour) {
 
-        String sql = "UPDATE flavours SET name = ? WHERE id = ?";
+        String sql = "UPDATE flavour SET name = ? WHERE id = ?";
 
         template.update(sql, flavour.getName(), flavour.getId());
     }
 
     public void deleteFlavour(Long id) {
 
-        String sql = "DELETE FROM flavours WHERE id = ?";
+        String sql = "DELETE FROM flavour WHERE id = ?";
 
         template.update(sql, id);
     }

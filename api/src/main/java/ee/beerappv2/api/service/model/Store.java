@@ -1,23 +1,18 @@
 package ee.beerappv2.api.service.model;
 
-import java.util.List;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Manufacturer {
-
-    private Long id;
-
-    private List<Beer> beers;
-
+public class Store {
     private String name;
 
     @Nullable
-    private String description;
-
-    @Nullable
     private String image;
+
+    private String beerLink;
 }

@@ -18,6 +18,10 @@ public class BeerJson {
 
     private List<Flavour> flavours;
 
+    private List<Store> stores;
+
+    private List<Rating> ratings;
+
     private BeerType beerType;
 
     private Country country;
@@ -31,6 +35,8 @@ public class BeerJson {
 
     @Size(max = 511)
     private String description;
+
+    private String priceCategory;
 
     @Size(max = 511)
     private String image;
@@ -57,9 +63,12 @@ public class BeerJson {
                 country = this.getCountry(),
                 beerType = this.getBeerType(),
                 flavours = this.getFlavours(),
+                stores = this.getStores(),
+                ratings = this.getRatings(),
                 name = this.getName(),
                 // routePath = this.getRoutePath(),
                 description = this.getDescription(),
+                priceCategory = this.getPriceCategory(),
                 image = this.getImage(),
                 abv = this.getAbv(),
                 averageRating = this.getAverageRating(),

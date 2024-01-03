@@ -52,7 +52,7 @@ public class ManufacturerRepository {
 
         parameters.put("name", manufacturer.getName());
         parameters.put("description", manufacturer.getDescription());
-        parameters.put("image_link", manufacturer.getImageLink());
+        parameters.put("image_link", manufacturer.getImage());
 
         new SimpleJdbcInsert(template)
                 .withTableName("manufacturers")
@@ -66,7 +66,7 @@ public class ManufacturerRepository {
 
         String sql = "UPDATE manufacturers SET name = ?, description = ?, image_link = ? WHERE id = ?";
 
-        template.update(sql, manufacturer.getName(), manufacturer.getDescription(), manufacturer.getImageLink(), manufacturer.getId());
+        template.update(sql, manufacturer.getName(), manufacturer.getDescription(), manufacturer.getImage(), manufacturer.getId());
     }
 
     public void deleteManufacturer(Long id) {
@@ -74,6 +74,10 @@ public class ManufacturerRepository {
         String sql = "DELETE FROM manufacturers WHERE id = ?";
 
         template.update(sql, id);
+    }
+
+    public List<Manufacturer> getAllManufacturers() {
+        return template.query("SELECT * FROM manufacturer ORDER BY name", BeanPropertyRowMapper.newInstance(Manufacturer.class));
     }
 }
 

@@ -5,6 +5,8 @@ import ee.beerappv2.api.service.model.Beer;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -35,5 +37,11 @@ public class BeerService {
 
     public void deleteBeer(Long id) {
         beerRepository.deleteBeer(id);
+    }
+
+    public List<Beer> findUserRatedBeers(String username) {
+        List<Beer> result = beerRepository.findUserRatedBeers(username);
+        if (result == null) return Collections.emptyList();
+        return result;
     }
 }

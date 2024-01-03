@@ -22,11 +22,17 @@ public class Beer {
 
     private List<Flavour> flavours;
 
+    private List<Store> stores;
+
+    private List<Rating> ratings;
+
     private String name;
 
     // private String routePath;
 
     private String description;
+
+    private String priceCategory;
 
     private String image;
 
@@ -46,22 +52,25 @@ public class Beer {
 
     public BeerJson toBeerJson() {
         return new BeerJson(
-                id = this.getId(),
-                flavours = this.getFlavours(),
-                beerType = this.getBeerType(),
-                country = this.getCountry(),
-                manufacturer = this.getManufacturer(),
-                name = this.getName(),
-                // routePath = this.getRoutePath(),
-                description = this.getDescription(),
-                image = this.getImage(),
-                abv = this.getAbv(),
-                averageRating = this.getAverageRating(),
-                bitterness = this.getBitterness(),
-                wortDensity = this.getWortDensity(),
-                lowerServeTemperature = this.getLowerServeTemperature(),
-                higherServeTemperature = this.getHigherServeTemperature(),
-                nutritionFacts = this.getNutritionFacts()
+            id = this.getId(),
+            flavours = this.getFlavours(),
+            stores = this.getStores(),
+            ratings = this.getRatings(),
+            beerType = this.getBeerType(),
+            country = this.getCountry(),
+            manufacturer = this.getManufacturer(),
+            name = this.getName(),
+            // routePath = this.getRoutePath(),
+            description = this.getDescription(),
+            priceCategory = this.getPriceCategory(),
+            image = this.getImage(),
+            abv = this.getAbv(),
+            averageRating = this.getAverageRating(),
+            bitterness = this.getBitterness(),
+            wortDensity = this.getWortDensity(),
+            lowerServeTemperature = this.getLowerServeTemperature(),
+            higherServeTemperature = this.getHigherServeTemperature(),
+            nutritionFacts = this.getNutritionFacts()
         );
     }
 }

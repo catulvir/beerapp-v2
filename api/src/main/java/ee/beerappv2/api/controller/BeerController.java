@@ -55,5 +55,11 @@ public class BeerController {
         beerService.deleteBeer(id);
         return ResponseEntity.status(200).build();
     }
+
+    @GetMapping("/user/{username}")
+    @PreAuthorize("hasAuthority('admin') OR hasAuthority('user')")
+    public ResponseEntity<List<BeerJson>> getUserRatedBeers(@PathVariable String username) {
+        return ResponseEntity.ok(beerService.findUserRatedBeers(username).stream().map((Beer::toBeerJson)).toList());
+    }
 }
 

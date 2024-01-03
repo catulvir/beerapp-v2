@@ -18,6 +18,10 @@ public class CountryRepository {
         this.template = template;
     }
 
+    public List<Country> getAllCountries() {
+        return template.query("SELECT * FROM country ORDER BY name", BeanPropertyRowMapper.newInstance(Country.class));
+    }
+
     public List<Country> findCountries(String name) {
 
         StringBuilder sql = new StringBuilder("SELECT * FROM country ");

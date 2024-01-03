@@ -25,7 +25,7 @@ public class BeerRepository {
     public List<Beer> findBeers(Map<String, String> searchParams) {
 
         StringBuilder sql = new StringBuilder(
-                "SELECT b.ID, b.BEER_TYPE_ID, b.COUNTRY_ID, b.MANUFACTURER_ID, b.NAME, b.DESCRIPTION, b.IMAGE, "
+                "SELECT b.ID, b.BEER_TYPE_ID, b.COUNTRY_ID, b.MANUFACTURER_ID, b.NAME, b.DESCRIPTION, b.PRICE_CATEGORY, b.IMAGE, "
                         +
                         "b.ABV, b.BITTERNESS, b.WORT_DENSITY, " +
                         "b.LOWER_SERVE_TEMPERATURE, b.HIGHER_SERVE_TEMPERATURE, " +
@@ -37,7 +37,7 @@ public class BeerRepository {
                         "FROM BEER b " +
                         "LEFT JOIN BEER_FLAVOUR bf ON b.ID = bf.BEER_ID " +
                         "LEFT JOIN FLAVOUR f ON f.ID = bf.FLAVOUR_ID " +
-                        "LEFT JOIN BEER_TYPE bt ON b.beer_type_id = bt.id " +
+                        "LEFT JOIN BEER_TYPE bt ON b.BEER_TYPE_ID = bt.ID " +
                         "LEFT JOIN COUNTRY oc ON b.COUNTRY_ID = oc.ID " +
                         "LEFT JOIN MANUFACTURER m ON b.MANUFACTURER_ID = m.ID ");
         // limit, pagination
@@ -82,25 +82,47 @@ public class BeerRepository {
     @Nullable
     public Beer findBeer(Long id) {
 
-        String sql = "SELECT b.ID, b.BEER_TYPE_ID, b.COUNTRY_ID, b.MANUFACTURER_ID, b.NAME, b.DESCRIPTION, b.IMAGE, "
-                +
-                "b.ABV, b.BITTERNESS, b.WORT_DENSITY, " +
-                "b.LOWER_SERVE_TEMPERATURE, b.HIGHER_SERVE_TEMPERATURE, " +
-                "string_agg(f.ID::VARCHAR, ',') AS FLAVOUR_IDS, string_agg(f.NAME, ',') AS FLAVOUR_NAMES, " +
-                "bt.NAME AS TYPE_NAME, bt.DESCRIPTION AS TYPE_DESCRIPTION, " +
-                "oc.NAME AS COUNTRY_NAME, oc.DESCRIPTION AS COUNTRY_DESCRIPTION, " +
-                "m.NAME AS MANUFACTURER_NAME, m.DESCRIPTION AS MANUFACTURER_DESCRIPTION, " +
-                "m.IMAGE AS MANUFACTURER_IMAGE " +
-                "FROM BEER b " +
-                "LEFT JOIN BEER_FLAVOUR bf ON b.ID = bf.BEER_ID " +
-                "LEFT JOIN FLAVOUR f ON f.ID = bf.FLAVOUR_ID " +
-                "LEFT JOIN BEER_TYPE bt ON b.beer_type_id = bt.id " +
-                "LEFT JOIN COUNTRY oc ON b.COUNTRY_ID = oc.ID " +
-                "LEFT JOIN MANUFACTURER m ON b.MANUFACTURER_ID = m.ID " +
-                "WHERE b.id = ? GROUP BY b.ID, TYPE_NAME, TYPE_DESCRIPTION, COUNTRY_NAME, COUNTRY_DESCRIPTION, " +
-                "MANUFACTURER_NAME, MANUFACTURER_DESCRIPTION, MANUFACTURER_IMAGE ";
+        String sql = "WITH agg_flavour_type_manufacturer_country AS (\n" +
+                "    SELECT b.ID, b.BEER_TYPE_ID, b.COUNTRY_ID, b.MANUFACTURER_ID, b.NAME, b.DESCRIPTION, b.PRICE_CATEGORY, b.IMAGE,\n" +
+                "           b.ABV, b.BITTERNESS, b.WORT_DENSITY,\n" +
+                "           b.LOWER_SERVE_TEMPERATURE, b.HIGHER_SERVE_TEMPERATURE,\n" +
+                "           string_agg(f.ID::VARCHAR, ',') AS FLAVOUR_IDS, string_agg(f.NAME, ',') AS FLAVOUR_NAMES,\n" +
+                "           bt.NAME AS TYPE_NAME, bt.DESCRIPTION AS TYPE_DESCRIPTION,\n" +
+                "           oc.NAME AS COUNTRY_NAME, oc.DESCRIPTION AS COUNTRY_DESCRIPTION,\n" +
+                "           m.NAME AS MANUFACTURER_NAME, m.DESCRIPTION AS MANUFACTURER_DESCRIPTION,\n" +
+                "           m.IMAGE AS MANUFACTURER_IMAGE\n" +
+                "    FROM BEER b\n" +
+                "             LEFT JOIN BEER_FLAVOUR bf ON b.ID = bf.BEER_ID\n" +
+                "             LEFT JOIN FLAVOUR f ON f.ID = bf.FLAVOUR_ID\n" +
+                "             LEFT JOIN BEER_TYPE bt ON b.beer_type_id = bt.id\n" +
+                "             LEFT JOIN COUNTRY oc ON b.COUNTRY_ID = oc.ID\n" +
+                "             LEFT JOIN MANUFACTURER m ON b.MANUFACTURER_ID = m.ID\n" +
+                "    WHERE b.id = ?\n" +
+                "    GROUP BY b.ID, TYPE_NAME, TYPE_DESCRIPTION, COUNTRY_NAME, COUNTRY_DESCRIPTION,\n" +
+                "             MANUFACTURER_NAME, MANUFACTURER_DESCRIPTION, MANUFACTURER_IMAGE\n" +
+                "), agg_rating AS (\n" +
+                "    SELECT b.ID,\n" +
+                "           string_agg(r.USERNAME, ',') AS RATING_USERNAMES,\n" +
+                "           string_agg(r.RATING::VARCHAR, ',') AS RATING_RATINGS,\n" +
+                "           string_agg(r.COMMENT, '_') AS RATING_COMMENTS, string_agg(r.FLAVOURS, ';') AS RATING_FLAVOURS\n" +
+                "    FROM BEER b\n" +
+                "             LEFT JOIN (SELECT beer_id, username, rating, comment, flavours FROM RATING WHERE beer_id = ? GROUP BY beer_id, username, rating, comment, flavours) as r ON b.ID = r.BEER_ID\n" +
+                "    WHERE b.id = ?\n" +
+                "    GROUP BY b.ID\n" +
+                "), agg_store AS (\n" +
+                "    SELECT b.ID,\n" +
+                "        string_agg(bs.BEER_LINK, ',') AS BEER_LINKS,\n" +
+                "        string_agg(s.NAME, ',') as STORE_NAMES,\n" +
+                "        string_agg(s.IMAGE, ',') as STORE_IMAGES\n" +
+                "    FROM BEER b\n" +
+                "        LEFT JOIN BEER_STORE bs ON b.ID = bs.BEER_ID\n" +
+                "        LEFT JOIN STORE s ON bs.STORE_ID = s.ID\n" +
+                "    WHERE b.id = ?\n" +
+                "    GROUP BY b.ID\n" +
+                ")\n" +
+                "SELECT * FROM agg_flavour_type_manufacturer_country JOIN agg_rating USING (id) JOIN agg_store USING (id)";
 
-        List<Beer> beers = template.query(sql, new BeerRowMapper(), id);
+        List<Beer> beers = template.query(sql, new BeerRowMapper(), id, id, id, id);
         if (beers.isEmpty()) {
             return null;
         } else {
@@ -183,5 +205,48 @@ public class BeerRepository {
         String sql = "DELETE FROM beer WHERE id = ?";
 
         template.update(sql, id);
+    }
+
+    @Nullable
+    public List<Beer> findUserRatedBeers(String username) {
+        String sql = "WITH agg_flavour_type_manufacturer_country AS (\n" +
+                "    SELECT b.ID, b.BEER_TYPE_ID, b.COUNTRY_ID, b.MANUFACTURER_ID, b.NAME, b.DESCRIPTION, b.PRICE_CATEGORY, b.IMAGE,\n" +
+                "           b.ABV, b.BITTERNESS, b.WORT_DENSITY,\n" +
+                "           b.LOWER_SERVE_TEMPERATURE, b.HIGHER_SERVE_TEMPERATURE,\n" +
+                "           string_agg(f.ID::VARCHAR, ',') AS FLAVOUR_IDS, string_agg(f.NAME, ',') AS FLAVOUR_NAMES,\n" +
+                "           bt.NAME AS TYPE_NAME, bt.DESCRIPTION AS TYPE_DESCRIPTION,\n" +
+                "           oc.NAME AS COUNTRY_NAME, oc.DESCRIPTION AS COUNTRY_DESCRIPTION,\n" +
+                "           m.NAME AS MANUFACTURER_NAME, m.DESCRIPTION AS MANUFACTURER_DESCRIPTION,\n" +
+                "           m.IMAGE AS MANUFACTURER_IMAGE\n" +
+                "    FROM BEER b\n" +
+                "             LEFT JOIN BEER_FLAVOUR bf ON b.ID = bf.BEER_ID\n" +
+                "             LEFT JOIN FLAVOUR f ON f.ID = bf.FLAVOUR_ID\n" +
+                "             LEFT JOIN BEER_TYPE bt ON b.beer_type_id = bt.id\n" +
+                "             LEFT JOIN COUNTRY oc ON b.COUNTRY_ID = oc.ID\n" +
+                "             LEFT JOIN MANUFACTURER m ON b.MANUFACTURER_ID = m.ID\n" +
+                "    GROUP BY b.ID, TYPE_NAME, TYPE_DESCRIPTION, COUNTRY_NAME, COUNTRY_DESCRIPTION,\n" +
+                "             MANUFACTURER_NAME, MANUFACTURER_DESCRIPTION, MANUFACTURER_IMAGE\n" +
+                "), agg_rating AS (\n" +
+                "    SELECT b.ID,\n" +
+                "           string_agg(r.USERNAME, ',') AS RATING_USERNAMES,\n" +
+                "           string_agg(r.RATING::VARCHAR, ',') AS RATING_RATINGS,\n" +
+                "           string_agg(r.COMMENT, '_') AS RATING_COMMENTS, string_agg(r.FLAVOURS, ';') AS RATING_FLAVOURS\n" +
+                "    FROM BEER b\n" +
+                "             LEFT JOIN (SELECT beer_id, username, rating, comment, flavours FROM RATING WHERE username = ? GROUP BY beer_id, username, rating, comment, flavours) as r ON b.ID = r.BEER_ID\n" +
+                "    WHERE r.username = ?\n" +
+                "    GROUP BY b.ID\n" +
+                "), agg_store AS (\n" +
+                "    SELECT b.ID,\n" +
+                "        string_agg(bs.BEER_LINK, ',') AS BEER_LINKS,\n" +
+                "        string_agg(s.NAME, ',') as STORE_NAMES,\n" +
+                "        string_agg(s.IMAGE, ',') as STORE_IMAGES\n" +
+                "    FROM BEER b\n" +
+                "        LEFT JOIN BEER_STORE bs ON b.ID = bs.BEER_ID\n" +
+                "        LEFT JOIN STORE s ON bs.STORE_ID = s.ID\n" +
+                "    GROUP BY b.ID\n" +
+                ")\n" +
+                "SELECT * FROM agg_flavour_type_manufacturer_country JOIN agg_rating USING (id) JOIN agg_store USING (id)";
+
+        return template.query(sql, new BeerRowMapper(), username, username);
     }
 }

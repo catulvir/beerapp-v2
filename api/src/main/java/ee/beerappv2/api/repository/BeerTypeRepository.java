@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import ee.beerappv2.api.service.model.BeerType;
+import ee.beerappv2.api.service.model.Flavour;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -73,5 +74,10 @@ public class BeerTypeRepository {
         String sql = "DELETE FROM beer_types WHERE id = ?";
 
         template.update(sql, id);
+    }
+
+    public List<BeerType> getAllBeerTypes() {
+
+        return template.query("SELECT * FROM beer_type ORDER BY name", BeanPropertyRowMapper.newInstance(BeerType.class));
     }
 }

@@ -5,7 +5,7 @@ import ee.beerappv2.api.controller.json.JwtJson;
 import ee.beerappv2.api.controller.json.LoginFormJson;
 import ee.beerappv2.api.controller.json.RegistrationFormJson;
 import ee.beerappv2.api.service.UserAlreadyExistsException;
-import ee.beerappv2.api.service.AuthService;
+import ee.beerappv2.api.service.UserService;
 import ee.beerappv2.api.service.model.identity.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +28,9 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
-    private final AuthService userService;
+    private final UserService userService;
 
-    public AuthController(AuthenticationManager authenticationManager, PasswordEncoder encoder, JwtUtils jwtUtils, AuthService userService) {
+    public AuthController(AuthenticationManager authenticationManager, PasswordEncoder encoder, JwtUtils jwtUtils, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.encoder = encoder;
         this.jwtUtils = jwtUtils;

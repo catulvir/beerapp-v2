@@ -3,7 +3,7 @@ package ee.beerappv2.api.config.security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ee.beerappv2.api.service.AuthService;
+import ee.beerappv2.api.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,9 +22,9 @@ import java.io.IOException;
 public class AuthTokenFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
-    private final AuthService userDetailsService;
+    private final UserService userDetailsService;
 
-    public AuthTokenFilter(AuthService databaseUserDetailsService, JwtUtils jwtUtils) {
+    public AuthTokenFilter(UserService databaseUserDetailsService, JwtUtils jwtUtils) {
         this.userDetailsService = databaseUserDetailsService;
         this.jwtUtils = jwtUtils;
     }
