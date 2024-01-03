@@ -1,7 +1,7 @@
 import axios from "axios";
 import User from "../types/identity/User";
 
-const API_URL = "http://localhost:8080/user/";
+const API_URL = "https://beerapp-backend.onrender.com/user/";
 
 class AuthService {
     login(username: string, password: string) {

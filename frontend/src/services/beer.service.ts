@@ -2,7 +2,7 @@ import http from "../http-common";
 import Beer from "../types/Beer";
 import authHeader from "./auth.header";
 
-const API_URL = 'http://localhost:8080/beers';
+const API_URL = 'https://beerapp-backend.onrender.com/beers';
 
 class BeerService {
     getAll() {
