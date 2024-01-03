@@ -126,6 +126,17 @@ export const AccountMenu = ({currentUser, handleLogout}: UserProps) => {
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                <Typography
+                                    variant="h5"
+                                    sx={{
+                                        mr: 2,
+                                        fontWeight: 500,
+                                        color: 'white',
+                                        textDecoration: 'none',
+                                    }}
+                                >
+                                    {currentUser?.username}
+                                </Typography>
                                 {!!currentUser ? <FaceIcon /> : <Avatar />}
                             </IconButton>
                         </Tooltip>

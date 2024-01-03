@@ -24,6 +24,10 @@ class BeerService {
     delete(id: any) {
         return http.delete<any>(API_URL + `/${id}`, { headers: authHeader() });
     }
+
+    getAllUserBeers(username: any) {
+        return http.get<Array<Beer>>(API_URL + `/user/${username}`, { headers: authHeader() });
+    }
 }
 
 export default new BeerService();

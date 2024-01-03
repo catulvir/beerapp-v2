@@ -1,11 +1,133 @@
 .beers-grid {
   .beer-grid {
+    display: flex;
+
     .beer-card {
-      width: 20%;
-      height: 20%;
+      display: flex;
+      flex-direction: column;
+      min-width: 200px;
 
       .beer-image {
         margin-top: 10px;
+      }
+
+      .card-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+      }
+
+      .card-actions {
+        margin-top: auto;
+        place-content: center;
+      }
+    }
+  }
+}
+
+.beers-filters {
+  display: flex;
+  width: 100%;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  gap: 15px;
+
+  .beer-type-filter {
+    min-width: 150px;
+  }
+
+  .beer-price-category-filter {
+    min-width: 200px;
+  }
+
+  .beer-country-filter {
+    min-width: 150px;
+  }
+
+  .beer-manufacturer-filter {
+    min-width: 160px;
+  }
+
+  .alco-free-filter {
+    min-width: 130px;
+    height: 100%;
+    place-content: center;
+  }
+
+  .abv-slider {
+    min-width: 100px;
+    margin-left: 10px;
+  }
+
+  .filter-button {
+    margin-left: auto;
+  }
+}
+
+.beer-details {
+  .beer-details-card {
+    .beer-image {
+      display: inline;
+      width: 50%;
+    }
+
+    .beer-accordion {
+      position: unset;
+      box-shadow: 0 1px 3px 0 rgba(0,0,0,0.12);
+
+      .accordion-image {
+        display: inline;
+        width: 15%;
+      }
+
+      .beer-stores {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+
+    .beer-ratings {
+      margin-top: 15px;
+
+      .beer-rating {
+        margin-top: 10px;
+        text-align: justify;
+      }
+    }
+
+    .alert {
+      color: red;
+    }
+  }
+}
+
+.beer-flavours {
+  margin-top: 10px;
+
+  > div {
+    margin: 3px
+  }
+}
+
+.add-rating-form {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15px;
+
+  .form-group {
+    width: 100%;
+
+    > div {
+      width: 25%;
+      min-width: 200px;
+
+      .rating-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
   }
