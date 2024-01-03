@@ -48,7 +48,6 @@ export default class Profile extends Component<Props, State> {
                         <p>
                             <strong>Token:</strong>{" "}
                             {currentUser!!.token.substring(0, 20)} ...{" "}
-                            {currentUser!!.token.substr(currentUser!!.token.length - 20)}
                         </p>
                         <p>
                             <strong>Email:</strong>{" "}
