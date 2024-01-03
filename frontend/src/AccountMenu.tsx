@@ -87,13 +87,11 @@ export const AccountMenu = ({currentUser, handleLogout}: UserProps) => {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-
                             <MenuItem key="beers" onClick={handleCloseNavMenu}>
                                 <Link underline="none" color="inherit" href="/beers">
                                     Beers
                                 </Link>
                             </MenuItem>
-
                         </Menu>
                     </Box>
                     <Typography
