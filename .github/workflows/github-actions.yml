@@ -21,11 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Run maven commands
+        uses: GuillaumeFalourd/maven-cli-jdks-action@jdk17
+        env:
+          DIRECTORY_PATH: ./api
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
-      - name: Run the Maven verify phase
-        run: mvn --batch-mode --update-snapshots verify
+          commands: 'clean package install'
